@@ -12,8 +12,8 @@ def stock(stock, exchange):
     soup = BeautifulSoup(req, "html.parser")
     return float(soup.find("div", class_="fxKbKc").text.replace("$", "").replace(",", "").replace("₹", "").replace("€", ""))
 
-stk = input("Stock: ")
-exchange = input("Exchange: ")
+stk = "BTC"
+exchange = "INR"
 out = stock(stk, exchange)
 bought = True
 Buy_price = out
