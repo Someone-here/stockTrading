@@ -6,12 +6,12 @@ options = Options()
 Options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
 Options.add_argument(options, "--headless")
 Options.add_argument(options, "--disable-gpu")
-Options.add_argument("--disable-dev-shm-usage")
-Options.add_argument("--no-sandbox")
+Options.add_argument(options, "--disable-dev-shm-usage")
+Options.add_argument(options, "--no-sandbox")
 Options.add_argument(options, "--silent")
 
 driver = webdriver.Chrome(executable_path=os.environ.get(
-    "CHROMEDRIVER_PATH"), chrome_options=Options)
+    "CHROMEDRIVER_PATH"), chrome_options=options)
 
 
 def setup(stock):
