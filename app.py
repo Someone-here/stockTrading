@@ -93,7 +93,7 @@ def info():
                 "type": "scatter",
                 "values": buys,
                 "marker": {
-                    "size": 5,
+                    "size": 8,
                     "background-color": "#00ff00",
                 }
             },
@@ -101,7 +101,7 @@ def info():
                 "type": "scatter",
                 "values": sells,
                 "marker": {
-                    "size": 5,
+                    "size": 8,
                     "background-color": "#ff0000",
                 }
             }
@@ -125,7 +125,5 @@ def sell_req():
     sell()
     return { "bought": bought }
 
-kwargs = {'host': '127.0.0.1', 'port': 5000, 'threaded': True, 'use_reloader': False, 'debug': True}
-
-flaskThread = threading.Thread(target=app.run, daemon=True, kwargs=kwargs).start()
-main()
+flaskThread = threading.Thread(target=main, daemon=True).start()
+app.run()
