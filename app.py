@@ -126,4 +126,5 @@ def sell_req():
     return { "bought": bought }
 
 flaskThread = threading.Thread(target=main, daemon=True).start()
-app.run()
+if __name__ == "__main__":
+    app.run()
