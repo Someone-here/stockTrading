@@ -1,0 +1,111 @@
+html,
+body,
+#myChart {
+  height: 90%;
+  width: 100%;
+}
+
+body {
+  overflow-y: hidden;
+}
+
+.stats {
+  font-size: 2rem;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.margin-right {
+  margin-right: 2rem;
+}
+
+.green {
+  color: lightgreen;
+}
+
+.red {
+  color: red;
+}
+
+.controls {
+  margin-top: 1rem;
+}
+
+.draw-border-green {
+  box-shadow: inset 0 0 0 4px lightgreen;
+  color: lightgreen;
+  transition: color 0.25s 0.0833333333s;
+  position: relative;
+}
+.draw-border-red {
+  box-shadow: inset 0 0 0 4px red;
+  color: red;
+  transition: color 0.25s 0.0833333333s;
+  position: relative;
+}
+.draw-border::before,
+.draw-border::after {
+  border: 0 solid transparent;
+  box-sizing: border-box;
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  width: 0;
+  height: 0;
+  bottom: 0;
+  right: 0;
+}
+.draw-border::before {
+  border-bottom-width: 4px;
+  border-left-width: 4px;
+}
+.draw-border::after {
+  border-top-width: 4px;
+  border-right-width: 4px;
+}
+.draw-border-green:hover {
+  color: green;
+}
+
+.draw-border-red:hover {
+  color: darkred;
+}
+.draw-border-green:hover::before,
+.draw-border-green:hover::after {
+  border-color: green;
+  transition: border-color 0s, width 0.25s, height 0.25s;
+  width: 100%;
+  height: 100%;
+}
+.draw-border-red:hover::before,
+.draw-border-red:hover::after {
+  border-color: darkred;
+  transition: border-color 0s, width 0.25s, height 0.25s;
+  width: 100%;
+  height: 100%;
+}
+.draw-border:hover::before {
+  transition-delay: 0s, 0s, 0.25s;
+}
+.draw-border:hover::after {
+  transition-delay: 0s, 0.25s, 0s;
+}
+
+.btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  line-height: 1.5;
+  font: 700 1.2rem "Roboto Slab", sans-serif;
+  padding: 1em 1.5em;
+  letter-spacing: 0.05rem;
+}
+.btn-green:focus {
+  outline: 2px dotted lightgreen;
+}
+.btn-red:focus {
+  outline: 2px dotted red;
+}
+
+.btn-red {
+  margin-right: 3em;
+}

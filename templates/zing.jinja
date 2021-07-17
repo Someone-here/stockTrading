@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Bitcoin</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/zing.css') }}">
+  <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+<body>
+  <div class="stats">
+    Current Price: &#8377;<span class="price margin-right"></span> 
+    Balance: &#8377;<span class="balance green margin-right"></span>
+    Bought: <span class="bought"></span>
+    <br />
+    <div class="controls">
+      Manual controls:
+      <button class="buy btn draw-border btn-green draw-border-green">BUY</button>
+      <button class="sell btn draw-border btn-red draw-border-red">SELL</button>
+      NAV: &#8377;<span class="NAV"></span>
+    </div>
+  </div>
+  <div id="myChart"></div>
+  <div class = "stats">Initial investment: <span class="capital"></span></div>
+  <script>
+    let largest;
+    let smallest;
+
+    // Stats vars
+    let price = document.querySelector(".price");
+    let balance = document.querySelector(".balance");
+    let bought = document.querySelector(".bought");
+    let capital = document.querySelector(".capital");
+    let NAV = document.querySelector(".NAV");
+
+    // Manual control buttons
+    let buyBtn = document.querySelector(".buy");
+    let sellBtn = document.querySelector(".sell");
+
+    // Buy/Sell requests
+    buyBtn.addEventListener("click", () => {
+      fetch("/buy", { method: "POST" })
+      .then((res) => res.json())
+      .then((results) => console.log(results))
+    });
+    sellBtn.addEventListener("click", () => {
+      fetch("/sell", { method: "POST" })
+      .then((res) => res.json())
+      .then((results) => console.log(results))
+    });
+
+    // original investment
+    fetch("/investment")
+    .then((res) => res.json())
+    .then((results) => capital.innerHTML = results.initial)
+
+    window.onload = () => {
+      const myConfig = {
+        type: "mixed",
+        utc: true,
+        timezone: +5.5,
+        scaleX: {
+          transform: {
+            type: "date",
+            all: "%D, %d %M %Y<br>%h:%i %A",
+            itemsOverlap: true,
+          },
+          item: {
+            fontSize: 10,
+          },
+        },
+        crosshairX: {
+          plotLabel: {
+            fontSize: 10,
+            multiple: true,
+          },
+          scaleLabel: {
+            fontSize: 10,
+          },
+        },
+        scaleY: {
+          autoFit: [true, true],
+          item: {
+            fontSize: 10,
+          },
+          guide: {
+            lineStyle: "dotted",
+          },
+        },
+        plot: {
+          tooltip: {
+            visible: false,
+          },
+
+          animation: {
+            method: "ANIMATION_STRONG_EASE_OUT",
+            sequence: "ANIMATION_BY_NODE",
+            speed: 0,
+          },
+        },
+        noData: {
+          text: "Fetching remote data...",
+          backgroundColor: "#eeeeee",
+          fontSize: 18,
+        },
+        series: [],
+      };
+
+      // Detemine the largest and smallest values of the prices
+      fetch("/info", { method: "POST" })
+        .then((res) => {
+          return res.json();
+        })
+        .then((results) => {
+          largest = results.data[0].values[0][1];
+          smallest = largest;
+          results.data[0].values.forEach((e) => {
+            if (e[1] > largest) largest = e[1];
+            else if (e[1] < smallest) smallest = e[1];
+          });
+        });
+      
+      // Chart updation
+      setInterval(() => {
+        fetch("/info", { method: "POST" })
+          .then((res) => {
+            return res.json();
+          })
+          .then((results) => {
+            // recalculating the smallest and largest values
+            let data = results.data[0].values
+            if (data[data.length - 1][1] > largest) largest = data[data.length - 1][1];
+            else if (data[data.length - 1][1] < smallest) smallest = data[data.length - 1][1];
+            
+            // Update the current price
+            if (parseFloat(price.innerHTML) < data[data.length - 1][1]) {
+              price.classList.remove("red");
+              price.classList.add("green");
+            }
+            else {
+              price.classList.remove("green");
+              price.classList.add("red");
+            }
+            price.innerHTML = data[data.length - 1][1];
+
+            // update the balance
+            balance.innerHTML = parseFloat(results.balance).toFixed(2);
+
+            // update NAV
+            if (results.NAV > capital.innerHTML) {
+              NAV.classList.add("green");
+              NAV.classList.remove("red");
+            }
+            else {
+              NAV.classList.add("red");
+              NAV.classList.remove("green");
+            }
+            NAV.innerHTML = parseFloat(results.NAV).toFixed(2);
+
+            // update bought or sold status
+            if (results.bought) {
+              bought.classList.remove("red");
+              bought.classList.add("green");
+            }
+            else {
+              bought.classList.remove("green");
+              bought.classList.add("red");
+            }
+            bought.innerHTML = results.bought;
+
+            // modify the min-max value of Y axis
+            zingchart.exec("myChart", "modify", {
+              data: {
+                scaleY: {
+                  maxValue: largest,
+                  minValue: smallest,
+                  item: {
+                    fontSize: 10,
+                  },
+                  guide: {
+                    lineStyle: "dotted",
+                  },
+                },
+              }
+            });
+
+            // Update chart info
+            zingchart.exec("myChart", "setseriesdata", {
+              data: results.data,
+            })
+          })
+          .catch((e) => {
+            // let the user know there was an error
+            zingchart.exec("myChart", "update", {
+              data: {
+                noData: {
+                  text: "Error Fetching remote data, please refresh page.",
+                },
+              },
+            });
+          });
+      }, 2000);
+
+      zingchart.render({
+        id: "myChart",
+        data: myConfig,
+        height: "100%",
+        width: "100%",
+      });
+    };
+  </script>
+</body>
+
+</html>

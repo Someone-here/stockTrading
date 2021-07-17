@@ -1,0 +1,83 @@
+{% extends 'base.jinja' %} {% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.3.2/dist/chart.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/moment@2.27.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-moment@0.1.1"></script>
+<script src="{{ url_for('static', filename='javascript/down.min.js') }}"></script>
+{% endblock head %} {% block title %}Hello{% endblock title %} {% block
+content%}
+<div style="height: 90%; width: 90%">
+  <canvas id="myChart"></canvas>
+</div>
+
+<script>
+  async function call() {
+    const response = await fetch("/info", { method: "POST" });
+    const json = await response.json();
+    return json;
+  }
+
+  call().then((e) => {
+    console.log(e);
+  });
+
+  var ctx = document.getElementById("myChart").getContext("2d");
+  var myChart = new Chart(ctx, {
+    type: "line",
+    label: ["nonone", "nonne"],
+    data: {
+      datasets: [
+        {
+          label: "HII",
+          data: [{x: "hi", y: 10}, {x: "yo", y: 20}],
+          borderWidth: 4,
+        },
+      ],
+    },
+    options: {
+      elements: {
+        line: {
+          backgroundColor: "#22ff2252",
+          borderColor: "#00de00",
+          fill: true,
+          borderWidth: 10,
+          tension: 0.1,
+        },
+        point: {
+          radius: 0,
+          borderWidth: 0,
+        },
+      },
+      scales: {
+        y: {
+          beginAtZero: false,
+        },
+        xAxis: {
+          type: "time",
+          ticks: {
+            source: "auto",
+            autoSkip: true,
+            maxTicksLimit: 10,
+            maxRotation: 0,
+            minRotation: 0,
+          },
+          time: {
+            unit: "second",
+          },
+        },
+      },
+    },
+  });
+
+  {# setInterval(() => {
+    colors = ["#00de00", "#de0000"];
+    myChart.options.elements.line.borderColor =
+      colors[Math.floor(Math.random() * colors.length)];
+    myChart.data.datasets[0].data.push(Math.random());
+    var today = new Date();
+    var time =
+      today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    myChart.data.labels.push(new Date());
+    myChart.update();
+  }, 100); #}
+</script>
+{% endblock content %}
