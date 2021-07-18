@@ -5,15 +5,15 @@ import threading
 import math
 
 app = Flask(__name__)
-trader.setup("BTCINR")
+trader.setup("BTCUSD")
 Time = datetime.now()
 
 curr_price = trader.quote()
 THRESHOLD = 0.0/100
 bought = True
+buys = [[math.floor(datetime.now().timestamp() * 1000), curr_price]]
 Buy_price = curr_price
 sell_price = curr_price
-buys = []
 sells = []
 balance = 0
 print(f"current price: {curr_price}")
@@ -125,7 +125,8 @@ def sell_req():
     sell()
     return { "bought": bought }
 
+flaskThread = threading.Thread(target=main, daemon=True).start()
+
 if __name__ == "__main__":
     app.run(use_reloader=False)
-    flaskThread = threading.Thread(target=main, daemon=True).start()
 
