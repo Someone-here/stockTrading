@@ -5,11 +5,11 @@ import threading
 import math
 
 app = Flask(__name__)
-trader.setup("BTCUSD")
+trader.setup("BTCINR")
 Time = datetime.now()
 
 curr_price = trader.quote()
-THRESHOLD = 0.0/100
+THRESHOLD = 0.08/100
 bought = True
 buys = [[math.floor(datetime.now().timestamp() * 1000), curr_price]]
 Buy_price = curr_price
