@@ -3,7 +3,6 @@ import trader
 from datetime import datetime, timedelta
 import threading
 import math
-from simplify import simplify
 from time import sleep
 import os
 
