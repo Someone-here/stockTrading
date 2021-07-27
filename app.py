@@ -1,24 +1,27 @@
 from flask import Flask, render_template
 import trader
-from datetime import datetime
+from datetime import datetime, timedelta
 import threading
 import math
+from simplify import simplify
+from time import sleep
+import os
 
 app = Flask(__name__)
 trader.setup("BTCINR")
 Time = datetime.now()
 
 curr_price = trader.quote()
-THRESHOLD = 0.08/100
+THRESHOLD = 1/100
 bought = True
 buys = [[math.floor(datetime.now().timestamp() * 1000), curr_price]]
+data = [[math.floor(datetime.now().timestamp() * 1000), curr_price]]
 Buy_price = curr_price
 sell_price = curr_price
 sells = []
 balance = 0
 print(f"current price: {curr_price}")
 investment = curr_price
-data = []
 
 def buy():
     global bought, curr_price, Buy_price, balance, sell_price
@@ -73,8 +76,7 @@ def main():
 
 @app.route("/")
 def home():
-    print("/////", Buy_price, curr_price, sell_price)
-    return render_template("chart.jinja")
+    return render_template("zing.jinja")
 
 @app.route("/investment")
 def initial():
@@ -111,10 +113,6 @@ def info():
         "NAV": getNAV()
         }
 
-@app.route("/zing")
-def zing():
-    return render_template("zing.jinja")
-
 @app.route("/buy", methods = ["POST"])
 def buy_req():
     buy()
@@ -125,8 +123,22 @@ def sell_req():
     sell()
     return { "bought": bought }
 
-flaskThread = threading.Thread(target=main, daemon=True).start()
+# def decimate():
+#     global data
+#     start = data[0][0] % 5
+#     while True:
+#         sleep(60)
+#         print(len(data))
+#         for i in data:
+#             if (datetime.utcfromtimestamp(i[0]/1000).minute % 5 != start) and not i in buys:
+#                 print(datetime.utcfromtimestamp(i[0]/1000).minute)
+#                 data.remove(i)
+#         print(len(data))
 
-if __name__ == "__main__":
-    app.run(use_reloader=False)
+
+bot = threading.Thread(target=main).start()
+# simple = threading.Thread(target=decimate)
+# simple.start()
+
+app.run(port=os.environ.get("PORT"))
 
