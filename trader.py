@@ -13,7 +13,7 @@ Options.add_argument(options, "--disable-dev-shm-usage")
 Options.add_argument(options, "--no-sandbox")
 Options.add_argument(options, "--silent")
 
-driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"),chrome_options=options)
+driver = webdriver.Chrome(chrome_options=options)
 
 
 def setup(stock: str):
