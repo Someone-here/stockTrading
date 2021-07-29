@@ -165,7 +165,7 @@
               bought.classList.remove("green");
               bought.classList.add("red");
             }
-            bought.innerHTML = results.bought;
+            bought.innerHTML = results.bought ? "Yes":"No";
 
             // modify the min-max value of Y axis
             zingchart.exec("myChart", "modify", {
