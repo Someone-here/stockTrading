@@ -1,5 +1,8 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 import os
 
 options = Options()
@@ -10,7 +13,7 @@ Options.add_argument(options, "--disable-dev-shm-usage")
 Options.add_argument(options, "--no-sandbox")
 Options.add_argument(options, "--silent")
 
-driver = webdriver.Chrome(chrome_options=options)
+driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"),chrome_options=options)
 
 
 def setup(stock: str):
@@ -18,5 +21,7 @@ def setup(stock: str):
 
 
 def quote():
-    driver.implicitly_wait(0.01)
-    return float(driver.find_element_by_css_selector("div.tv-symbol-price-quote__value.js-symbol-last").text)
+    element = WebDriverWait(driver, 10).until(
+        EC.visibility_of_element_located((By.CSS_SELECTOR, "div.tv-symbol-price-quote__value.js-symbol-last"))
+    )
+    return float(element.text)
