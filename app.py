@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 import threading
 import math
 from time import sleep
-import os
 
 app = Flask(__name__)
 trader.setup("BTCINR")
@@ -72,6 +71,9 @@ def main():
                 stock_log()
         
 
+@app.before_first_request
+def execute():
+    threading.Thread(target=main).start()
 
 @app.route("/")
 def home():
@@ -134,10 +136,9 @@ def sell_req():
 #                 data.remove(i)
 #         print(len(data))
 
-
-bot = threading.Thread(target=main).start()
 # simple = threading.Thread(target=decimate)
 # simple.start()
 
-app.run(port=os.environ.get("PORT"))
+if __name__ == "__main__":
+    app.run()
 
