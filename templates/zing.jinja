@@ -20,10 +20,14 @@
     </div>
   </div>
   <div id="myChart"></div>
-  <div class = "stats">Initial investment: <span class="capital"></span></div>
+  <div class = "stats">
+    Initial investment: <span class="capital margin-right"></span>
+    Current Profit: <span class="profit"></span>
+  </div>
   <script>
     let largest;
     let smallest;
+    let investment;
 
     // Stats vars
     let price = document.querySelector(".price");
@@ -31,6 +35,7 @@
     let bought = document.querySelector(".bought");
     let capital = document.querySelector(".capital");
     let NAV = document.querySelector(".NAV");
+    let profit = document.querySelector(".profit")
 
     // Manual control buttons
     let buyBtn = document.querySelector(".buy");
@@ -51,7 +56,7 @@
     // original investment
     fetch("/investment")
     .then((res) => res.json())
-    .then((results) => capital.innerHTML = results.initial)
+    .then((results) => { capital.innerHTML = results.initial; investment = results.initial; })
 
     window.onload = () => {
       const myConfig = {
@@ -143,7 +148,7 @@
             price.innerHTML = data[data.length - 1][1];
 
             // update the balance
-            balance.innerHTML = parseFloat(results.balance).toFixed(2);
+            balance.innerHTML = parseFloat(results.balance);
 
             // update NAV
             if (results.NAV > capital.innerHTML) {
@@ -154,7 +159,13 @@
               NAV.classList.add("red");
               NAV.classList.remove("green");
             }
-            NAV.innerHTML = parseFloat(results.NAV).toFixed(2);
+            NAV.innerHTML = results.NAV;
+
+            // Caculate Profit
+            totalProfit = parseFloat((parseFloat(NAV.innerHTML) * 100 - investment * 100) / 100).toFixed(2)
+            profit.innerHTML = `${totalProfit} (${parseFloat(((totalProfit * 100 / investment * 100) / 10000) * 100).toFixed(2)}%)`
+            if (totalProfit > 0) { profit.classList.remove("red"); profit.classList.add("green");}
+            else { profit.classList.remove("green"); profit.classList.add("red"); }
 
             // update bought or sold status
             if (results.bought) {

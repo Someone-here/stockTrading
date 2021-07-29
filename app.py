@@ -10,7 +10,7 @@ trader.setup("BTCINR")
 Time = datetime.now()
 
 curr_price = trader.quote()
-THRESHOLD = 1/100
+THRESHOLD = 0.6/100
 bought = True
 buys = [[math.floor(datetime.now().timestamp() * 1000), curr_price]]
 data = [[math.floor(datetime.now().timestamp() * 1000), curr_price]]
@@ -25,7 +25,7 @@ def buy():
     global bought, curr_price, Buy_price, balance, sell_price
     if not bought:
         Buy_price = curr_price
-        balance = balance - Buy_price
+        balance = (balance * 100 - Buy_price * 100) / 100
         bought = True
         print("buy", curr_price, balance)
         buys.append([math.floor(datetime.now().timestamp() * 1000), curr_price])
@@ -58,14 +58,14 @@ def main():
         if trader.quote() < curr_price:
             curr_price = trader.quote()
             data.append([math.floor(datetime.now().timestamp() * 1000), curr_price])
-            if bought and curr_price > Buy_price and curr_price - Buy_price >= THRESHOLD * curr_price:
+            if bought and curr_price > Buy_price and (curr_price * 100 - Buy_price * 100) / 100 >= THRESHOLD * curr_price:
                 sell()
             else:
                 stock_log()
         elif trader.quote() > curr_price:
             curr_price = trader.quote()
             data.append([math.floor(datetime.now().timestamp() * 1000), curr_price])
-            if not bought and curr_price < sell_price and sell_price - curr_price >= (THRESHOLD/2) * curr_price:
+            if not bought and curr_price < sell_price and (sell_price * 100 - curr_price * 100) / 100 >= (THRESHOLD/2) * curr_price:
                 buy()
             else:
                 stock_log()
