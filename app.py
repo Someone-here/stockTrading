@@ -52,7 +52,7 @@ def getNAV():
     else:
         return balance
 
-def man():
+def main():
     global bought, curr_price, Buy_price, balance, sell_price
     while True:
         if trader.quote() < curr_price:
@@ -71,9 +71,6 @@ def man():
                 stock_log()
         
 
-@app.before_first_request
-def execute():
-    threading.Thread(target=man).start()
 
 @app.route("/")
 def home():
@@ -136,6 +133,8 @@ def sell_req():
 #                 data.remove(i)
 #         print(len(data))
 
+
+threading.Thread(target=main).start()
 # simple = threading.Thread(target=decimate)
 # simple.start()
 
