@@ -6,7 +6,7 @@ import math
 from time import sleep
 
 app = Flask(__name__)
-trader.setup("BTCINR")
+trader.setup("BTCUSD")
 Time = datetime.now()
 
 curr_price = trader.quote()
